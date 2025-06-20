@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <script src="map_styles/styles.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        // Function to parse the URL search query parameters.
+        // It will give A, B, C given http://www.somelink.com?lat=A&lon=B&zoom=C
+        // See "http://javascriptproductivity.blogspot.com/" +
+        // "2013/02/get-url-variables-with-javascript.html".
+        function getParams() {
+            // Make an object variable to hold
+            // the parsed URL parameters' keys and vlaues.
+            var params = {};
+
+            // Remove the '?' character after the base url.
+            // x.substring(i) will return the substring of x starting at index i
+            // up to the end of the string.
+            // Drupal CMS might have a path like this (two '?' characters):
+            // mapParser.html?t=E3OD?lat=14.6760413&lon=121.0437003&...
+            // We need to handle this case also.
+            var lastIndex = window.location.search.lastIndexOf("?")
+
+            // Get the substring not including any '?' character.
+            var query_string = window.location.search.substring(lastIndex + 1);
+
+            // Explode the string using the '&' character.
+            var query_string_parts = query_string.split('&');
+
+            // Traverse the exploded tokens.
+            for (i in query_string_parts) {
+                // Explode the string using '=' to isolate keys and values.
+                key_value = query_string_parts[i].split('=');
+
+                // Insert a new key and set it to the current parsed value.
+                params[key_value[0]] = key_value[1];
+            }
+
+            // Return the parameter object contianing the keys and values.
+            return params;
+        }
+    </script>
+    <style>
+        .gmap-popup-content {
+            text-align: center;
+        }
+        
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        
+        html,
+        body,
+        #gmap_container {
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id='gmap_container' data-lat="" data-lon="" data-zoom=""></div>
+    <script type="text/javascript">
+        // init google map
+        if (typeof google === 'object' && typeof google.maps === 'object') {
+            initMap();
+        } else {
+            var script = document.createElement("script");
+            script.type = "text/javascript";
+            script.src = "https://maps.google.com.tw/maps/api/js?language=zh-TW&key=AIzaSyCUSk-5eNj1T5RH1U6tWPuqzA5fVMv37f0&callback=initMap";
+            document.body.appendChild(script);
+        }
+        // Get the DOM node to which we will append the map.
+        // In our setup the map container is a DIV element.
+        var mapDiv = document.getElementById("gmap_container");
+
+        // Parse the query parameters in the URL to obtain the
+        // LAT, LON, and ZOOM values.
+        var queryString = getParams();
+
+        // Fetch the most important attributes.
+        var latitude = queryString["lat"];
+        var longitude = queryString["lon"];
+        var zoom = queryString["zoom"];
+
+        // Initialize the mapDiv data attributes.
+        mapDiv.setAttribute("data-lat", latitude);
+        mapDiv.setAttribute("data-lon", longitude);
+        mapDiv.setAttribute("data-zoom", zoom);
+
+        // Convert the parameters to their numeric equivalent.
+        // Otherwise, initializing the Google map object will not work.
+        latitude = Number(latitude);
+        longitude = Number(longitude);
+        zoom = Number(zoom);
+
+        var responsive = queryString["responsive"];
+        // If responsive map option is enabled, set the map height to 100%.
+        if (responsive == "on") {
+            mapDiv.style.height = "100%";
+        } else {
+            // Retrieve the map's height.
+            var mapHeight = Number(queryString["height"]);
+            mapDiv.style.height = String(mapHeight) + "px";
+        }
+
+        // Retrive the popup text that will be used by the marker.
+        var popUpText = queryString["text"];
+
+        var styler = queryString["styler"];
+        // Create a map in the the target DOM container.
+        // Set the view to a given place and zoom value.
+        var map;
+
+        function initMap() {
+
+            var myLatLng = {
+                lat: latitude,
+                lng: longitude
+            };
+
+            map = new google.maps.Map(mapDiv, {
+                center: myLatLng,
+                zoom: zoom,
+
+            });
+            // styles map
+            if (styler !== 'default')
+                map.setOptions({
+                    styles: StylerProvider[styler]
+                });
+
+            // Add a marker in the given location.
+            var marker = new google.maps.Marker({
+                position: myLatLng,
+                map: map,
+                title: 'marker'
+            });
+            // If the pop-up text is specified.
+            if (popUpText != '') {
+                var infowindow = new google.maps.InfoWindow({
+                    content: decodeURIComponent(popUpText)
+                });
+
+                marker.addListener('click', function() {
+                    infowindow.open(map, marker);
+                });
+            }
+            // Add an event listener that will keep track the changes in the
+            // map's zoom levels and it will update the data attribute accordingly.
+            map.addListener('zoom_changed', function(e) {
+                mapDiv.setAttribute("data-zoom", map.getZoom());
+            });
+        }
+    </script>
+</body>
+
+</html>

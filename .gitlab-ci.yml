@@ -1,0 +1,21 @@
+image: alpine:latest
+
+before_script:
+  - apk update && apk add --no-cache openssh sshpass
+  - ls
+
+stages:
+  - deploy
+
+deploy_staging:
+  stage: deploy
+  script:
+    # - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    # - eval $(ssh-agent -s)
+    # - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - 'echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - chmod +x ./deploy.sh
+    - ./deploy.sh $SSH_PASSWORD $SSH_REMOTE_IP
+  only:
+    - main

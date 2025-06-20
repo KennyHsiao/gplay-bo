@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,maximum-scale=1.0,minimum-scale=1.0,initial-scale=1.0,user-scalable=no">
+    <script src="zepto.min.js"></script>
+    <link rel="stylesheet" href="scratcher.css">
+    <title>组件-刮刮乐</title>
+</head>
+<body>
+    <div class="scratcherContainer">
+        <!-- 结果 可动态写入 -->
+        <!-- <img src="img/background.png" alt=""> -->
+    </div>
+<script src="scratcher.js"></script>
+<script>
+$('.scratcherContainer').scratcher({
+    maskImage: 'img/foreground.png',// 刮层 必填
+    // threshold: 40, // 刮掉60的时候显示底图
+    // lineWidth: 45, // 线宽
+    backImage: 'img/background.png'// 底图 可以写入HTML标签，也可以配置
+});
+</script>
+</body>
+</html>
