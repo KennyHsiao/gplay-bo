@@ -149,15 +149,21 @@ return [
         'default' => [
             'driver' => 'sentinel',
             'service' => env('REDIS_SENTINEL_SERVICE', 'mymaster'),
-            'sentinels' => explode(',', env('REDIS_SENTINELS')),
+            'sentinels' => collect(explode(',', env('REDIS_SENTINELS')))->map(function ($entry) {
+                [$host, $port] = explode(':', $entry);
+                return ['host' => $host, 'port' => (int) $port];
+            })->toArray(),
             'password' => env('REDIS_PASSWORD'),
             'database' => 0,
         ],
-
+    
         'cache' => [
             'driver' => 'sentinel',
             'service' => env('REDIS_SENTINEL_SERVICE', 'mymaster'),
-            'sentinels' => explode(',', env('REDIS_SENTINELS')),
+            'sentinels' => collect(explode(',', env('REDIS_SENTINELS')))->map(function ($entry) {
+                [$host, $port] = explode(':', $entry);
+                return ['host' => $host, 'port' => (int) $port];
+            })->toArray(),
             'password' => env('REDIS_PASSWORD'),
             'database' => 1,
         ],
