@@ -17,6 +17,7 @@
         "linecorp/line-bot-sdk": "^7.6",
         "namoshek/laravel-redis-sentinel": "^0.1.2",
         "pimple/pimple": "^3.0",
+        "predis/predis": "^3.0",
         "tpetry/laravel-postgresql-enhanced": "^0.38.0",
         "xn/checkboxtree": "dev-master",
         "xn/drawflow-editor": "dev-master",
