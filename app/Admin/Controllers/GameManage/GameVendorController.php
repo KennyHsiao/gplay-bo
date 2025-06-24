@@ -44,7 +44,7 @@ class GameVendorController extends AdminController
             return new Table([__('Key'), __('Value')], $this->params??[]);
         });
         $grid->column('gameType.name', __('遊戲類型'))->display(function($v){
-            return $v[session('locale')]??$v['en'];
+            return $v[session('locale')]??$v['en']??"-";
         });
         $grid->column('ip_whitelist', __('白名單'))->display(function($v){
             return explode(',', $v);
