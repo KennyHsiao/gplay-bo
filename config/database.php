@@ -139,18 +139,20 @@ return [
             // 'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
         ],
 
-        'default' => explode(',', env('REDIS_SENTINELS')) + [
-                'options' => [
-                    'replication' => 'sentinel',
-                    'service' => env('REDIS_SENTINEL_SERVICE', 'mymaster'),
-                    'parameters' => [
-                        'password' => env('REDIS_PASSWORD'),
-                        'database' => 0,
-                    ],
-                ]
-            ],
+        'default' => [
+            ...explode(',', env('REDIS_SENTINELS')),
+            'options' => [
+                'replication' => 'sentinel',
+                'service' => env('REDIS_SENTINEL_SERVICE', 'mymaster'),
+                'parameters' => [
+                    'password' => env('REDIS_PASSWORD'),
+                    'database' => 0,
+                ],
+            ]
+        ],
 
-        'cache' => explode(',', env('REDIS_SENTINELS')) + [
+        'cache' => [
+            ...explode(',', env('REDIS_SENTINELS')),
             'options' => [
                 'replication' => 'sentinel',
                 'service' => env('REDIS_SENTINEL_SERVICE', 'mymaster'),
