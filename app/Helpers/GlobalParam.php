@@ -19,7 +19,7 @@ class GlobalParam {
     * @return string
     */
     public static function CreateTxDbConfig($dbConfig, $dbName = 'postgres') : string {
-        $db = json_decode($dbConfig, true);
+        $db = is_array($dbConfig) ? $dbConfig : json_decode($dbConfig, true);
         $connName = ($dbName == 'postgres') ? $db['ip'] : $dbName;
         Config::set("database.connections.{$connName}", [
             'driver' => 'pgsql',
@@ -57,7 +57,7 @@ class GlobalParam {
     * @return string
     */
     public static function CreateRepDbConfig($dbConfig, $dbName) : string {
-        $db = json_decode($dbConfig, true);
+        $db = is_array($dbConfig) ? $dbConfig : json_decode($dbConfig, true);
         $connName = $dbName;
         Config::set("database.connections.{$connName}", [
             'driver' => 'mongodb',

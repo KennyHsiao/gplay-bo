@@ -21,6 +21,16 @@ class Database extends Model
 
     public $timestamps = false;
 
+    public function getTxDbAttribute()
+    {
+        return json_decode($this->attributes['tx_db'], true);
+    }
+
+    public function getRepDbAttribute()
+    {
+        return json_decode($this->attributes['rep_db'], true);
+    }
+
     protected static function boot()
     {
         parent::boot();

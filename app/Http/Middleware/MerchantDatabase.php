@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Helpers\GlobalParam;
+use App\Helpers\JsonCache;
 use App\Models\Platform\Merchant;
 use App\Models\System\Database;
 use Closure;
@@ -23,14 +24,16 @@ class MerchantDatabase
         if (session()->has('merchant_code')) {
 
             $cacheKey = "database_".session('merchant_code');
-            $db = Cache::rememberForever($cacheKey, function () {
-                return Database::where([
+            $db = JsonCache::rememberForever($cacheKey, function () {
+                $agentDb = Database::where([
                     'agent_code' => session('agent_code'),
                     'slug' => 'db'
                 ])->select('agent_code', 'tx_db', 'rep_db')->first();
+
+                return $agentDb ? $agentDb->toArray() : null;
             });
-            GlobalParam::CreateTxDbConfig($db->tx_db, strtolower(session('agent_code')."_tx"));
-            GlobalParam::CreateRepDbConfig($db->rep_db, strtolower(session('agent_code')."_rep"));
+            GlobalParam::CreateTxDbConfig($db['tx_db'], strtolower(session('agent_code')."_tx"));
+            GlobalParam::CreateRepDbConfig($db['rep_db'], strtolower(session('agent_code')."_rep"));
             // 代理/商戶 RTP
             // $m = Cache::rememberForever("agentdb", function () {
             //     return Database::where([
@@ -52,19 +55,21 @@ class MerchantDatabase
         if ($request->has('m_code')) {
             $mCode = strtoupper($request->input('m_code'));
             $cacheKey = "database_". $mCode;
-            $db = Cache::rememberForever($cacheKey, function () use($mCode) {
+            $db = JsonCache::rememberForever($cacheKey, function () use($mCode) {
                 $m = Merchant::where([
                     'code' => $mCode,
                 ])->select('agent_code')->first();
 
-                return Database::where([
+                $agentDb = Database::where([
                     'agent_code' => $m->agent_code,
                     'slug' => 'db'
                 ])->select('agent_code', 'tx_db', 'rep_db')->first();
+
+                return $agentDb ? $agentDb->toArray() : null;
             });
             session(['merchant_code' => $mCode]);
-            session(['agent_code' => $db->agent_code]);
-            GlobalParam::CreateTxDbConfig($db->tx_db, strtolower($db->agent_code."_tx"));
+            session(['agent_code' => $db['agent_code']]);
+            GlobalParam::CreateTxDbConfig($db['tx_db'], strtolower($db['agent_code']."_tx"));
         }
 
         return $next($request);

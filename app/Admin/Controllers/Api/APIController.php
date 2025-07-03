@@ -5,6 +5,7 @@ namespace App\Admin\Controllers\Api;
 
 
 use App\Helpers\GlobalParam;
+use App\Helpers\JsonCache;
 use App\Http\HttpResponse\RespData;
 use App\Http\HttpResponse\RespState;
 use App\Models\GameManage\GameVendor;
@@ -301,12 +302,14 @@ class APIController extends Controller
     private function initDB()
     {
         $cacheKey = "database_".session('agent_code');
-        $db = Cache::rememberForever($cacheKey, function () {
-            return Database::where([
+        $db = JsonCache::rememberForever($cacheKey, function () {
+            $agentDb = Database::where([
                 'agent_code' => session('agent_code'),
                 'slug' => 'db'
-            ])->select('tx_db', 'rep_db')->first();
+            ])->select('agent_code', 'tx_db', 'rep_db')->first();
+
+            return $agentDb ? $agentDb->toArray() : null;
         });
-        return GlobalParam::CreateTxDbConfig($db->tx_db, strtolower(session('agent_code')."_tx"));
+        return GlobalParam::CreateTxDbConfig($db['tx_db'], strtolower(session('agent_code')."_tx"));
     }
 }
