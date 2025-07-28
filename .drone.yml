@@ -1,0 +1,28 @@
+# stage 環境
+kind: pipeline
+type: docker
+name: Drone ci
+
+clone:
+  disable: true
+
+steps:
+
+  - name: git pull & update dev
+    image: appleboy/drone-ssh
+    settings:
+      host:
+        from_secret: host
+      USERNAME:
+        from_secret: user
+      PASSWORD:
+        from_secret: pwd
+      port:
+        from_secret: port
+      script:
+        - cd /home/gplay-bo && sh update.sh
+    when:
+      branch:
+        - dev
+      event:
+        - push
