@@ -63,11 +63,6 @@ Route::group([
         $router->resource('banners', BannerController::class);
 
         $router->resource('marquees', MarqueeController::class);
-
-        # 房型管理
-        $router->resource('room-types', RoomTypeController::class);
-        # 好友房型
-        $router->resource('friend-room-types', FriendRoomTypeController::class);
     });
 
     # 玩家管理
@@ -99,6 +94,11 @@ Route::group([
     ], function($router){
         $router->resource('companies', CompanyController::class);
         $router->resource('merchants', MerchantController::class);
+
+        # 房型管理
+        $router->resource('room-types', RoomTypeController::class);
+        # 好友房型
+        $router->resource('friend-room-types', FriendRoomTypeController::class);
     });
 
     # 系統配置

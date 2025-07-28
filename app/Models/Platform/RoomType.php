@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Models\Merchant;
+namespace App\Models\Platform;
 
-use App\Models\Platform\Company;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Redis;
@@ -14,7 +13,7 @@ class RoomType extends Model
 
     public $timestamps = false;
 
-    protected $table = "mc_room_types";
+    protected $table = "sys_room_types";
 
     protected $casts = [
         'title' => 'json',
@@ -26,13 +25,8 @@ class RoomType extends Model
 
 
         self::saving(function ($model) {
-            Redis::del("mc_room_types:mcCode:".$model->merchant_code);
-            Redis::del(sprintf("mcCode:%s:roomType:map", $model->merchant_code));
+            Redis::del("sys_room_types");
+            Redis::del("roomType:map");
         });
-    }
-
-    public function merchant()
-    {
-        return $this->belongsTo(Company::class, 'merchant_code', 'code');
     }
 }
